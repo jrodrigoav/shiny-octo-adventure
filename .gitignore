@@ -154,8 +154,8 @@ $RECYCLE.BIN/
 
 # Mac desktop service store files
 .DS_Store
+/.vs
 packages/
 packages
 /.nuget
-/CahWeb/Scripts/_references.js
 /.vs/config/applicationhost.config
