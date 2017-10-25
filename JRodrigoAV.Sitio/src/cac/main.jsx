@@ -23,10 +23,17 @@ class App extends React.Component {
     }
 
     gameConnection
+    resetClient(component) {
+        component.setState({
+            joined: false,
+            players: [],
+            gameStarted: false
+        });
+    }
     setupHub() {
         var transportType = signalR.TransportType.WebSockets;
         //can also be ServerSentEvents or LongPolling
-        var logger = new signalR.ConsoleLogger(signalR.LogLevel.Information);
+        var logger = new signalR.ConsoleLogger(signalR.LogLevel.Error);
         var gameHub = new signalR.HttpConnection(`http://${document.location.host}/game`, {
             transport: transportType,
             logger: logger
@@ -36,6 +43,7 @@ class App extends React.Component {
         this.gameConnection.onClosed = e => {
             console.log('Connection closed');
         };
+
 
         this.gameConnection.on('PlayerJoined', (playerList) => {
             //console.log(`Player ${playerName} joined the game.`);            
@@ -85,13 +93,14 @@ class App extends React.Component {
                 this.setupHub();
             }
         } else {
+            var that=this;
             this.gameConnection.invoke('LeaveGame').then(() => {
                 this.setState({
                     joined: false,
                     players: []
                 });
                 this.gameConnection.stop().catch(err => console.log(`Error closing connection ${err}`));
-            });
+            },(event)=> that.resetClient(that));
         }
 
     }
