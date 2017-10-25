@@ -25,8 +25,7 @@ namespace JRodrigoAV.Sitio.Models.Game
 
         public void StartGame()
         {
-            Started=true;
-            _blackDeck.Shuffle();
+            Started=true;            
             GameCard=_blackDeck.GetTopCard();
         }
 
