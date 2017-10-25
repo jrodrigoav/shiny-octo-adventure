@@ -1,5 +1,5 @@
 ﻿"use strict";
-var signalR = require('@aspnet/signalr-client/dist/browser/signalr-client-1.0.0-alpha2-final');
+//var signalR = require('@aspnet/signalr-client/dist/browser/signalr-client-1.0.0-alpha2-final');
 import React from 'react';
 import { render } from 'react-dom';
 import axios from 'axios';
@@ -89,7 +89,8 @@ class App extends React.Component {
         } else {
             this.gameConnection.invoke('LeaveGame').then(() => {
                 this.setState({
-                    joined: false
+                    joined: false,
+                    players:[]
                 });
                 this.gameConnection.stop().catch(err => console.log(`Error closing connection ${err}`));
             });
