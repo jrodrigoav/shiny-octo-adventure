@@ -3,7 +3,9 @@ var signalR = require('@aspnet/signalr-client/dist/browser/signalr-clientES5-1.0
 //import React from 'react';
 import { render } from 'react-dom';
 //import axios from 'axios';
-import { Login, Players } from './players.jsx';
+import { Players } from './players.jsx';
+import { Login } from './login.jsx';
+import { BlackCard } from './blackcard.jsx';
 
 class App extends React.Component {
     constructor(props) {
@@ -12,7 +14,8 @@ class App extends React.Component {
             playerName: '',
             gameStarted: false,
             joined: false,
-            players: []
+            players: [],
+            gameCard: {}
         };
         this.joinGame = this.joinGame.bind(this);
         this.startStopGame = this.startStopGame.bind(this);
@@ -48,8 +51,8 @@ class App extends React.Component {
             });
         });
 
-        this.gameConnection.on('GameStarted', () => this.setState({ gameStarted: true }));
-        this.gameConnection.on('GameStopped', () => this.setState({ gameStarted: false }));
+        this.gameConnection.on('GameStarted', (gameState) => this.setState({ gameStarted: gameState.started, gameCard: gameState.gameCard }));
+        this.gameConnection.on('GameStopped', () => this.setState({ gameStarted: false, gameCard: {} }));
 
         this.gameConnection.start().then(() => this.gameConnection.invoke('JoinGame', this.state.playerName).then(result => {
             //console.log(result);
@@ -107,12 +110,17 @@ class App extends React.Component {
         const isStarted = this.state.gameStarted;
         const playerName = this.state.playerName;
         const players = this.state.players;
-        return <div role="main" className="container" >
-            <div className="col-xs-12 col-sm-4">
+        const blackCard = this.state.gameCard;
+        return <div className="row" >
+            <div className="col-md-12 col-lg">
                 <Login joined={isJoined} started={isStarted} onJoin={this.joinGame} playerName={playerName} handleInput={this.handleInputChange} startStopGame={this.startStopGame} />
                 <Players players={players} />
             </div>
-            <div className="col-xs-12 col-sm-8"></div>
+            <div className="col-md-12 col-lg">
+                <BlackCard blackCard={blackCard} />
+            </div>
+            <div className="w-100 d-lg-none d-md-block"></div>
+            <div className="col-md-12 col-lg-8">Hi</div>
         </div>;
     }
 }

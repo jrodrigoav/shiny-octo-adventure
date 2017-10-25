@@ -28,5 +28,14 @@ namespace JRodrigoAV.Sitio.Controllers
 
         [HttpGet("black/{id}")]
         public IActionResult GetBlackCardById(int id) => Json(_blackDeck.GetCardById(id));
+
+        [HttpGet("black")]
+        public IActionResult GetBlackCard(){
+            if(_gameState.Started)
+            {
+                return Json(_blackDeck.GetTopCard());
+            }
+            return BadRequest("Game not started");
+        } 
     }
 }

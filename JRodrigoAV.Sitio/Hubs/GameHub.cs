@@ -39,11 +39,11 @@ namespace JRodrigoAV.Sitio.Hubs
             if (player != null)
             {
                 result = _players.Remove(player.LowerCaseName);
-                if(_players.Count == 0)
+                if (_players.Count == 0)
                 {
                     _gameState.StopGame();
                 }
-                await Clients.All.InvokeAsync("PlayerLeft",_gameState.PlayerNames);
+                await Clients.All.InvokeAsync("PlayerLeft", _gameState.PlayerNames);
             }
             return await Task.Run(() => result);
         }
@@ -53,7 +53,8 @@ namespace JRodrigoAV.Sitio.Hubs
             if (!_gameState.Started && GetPlayer() != null)
             {
                 _gameState.StartGame();
-                await Clients.All.InvokeAsync("GameStarted");
+
+                await Clients.All.InvokeAsync("GameStarted", _gameState);
             }
         }
 
