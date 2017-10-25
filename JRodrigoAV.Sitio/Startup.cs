@@ -1,6 +1,10 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using JRodrigoAV.Sitio.Hubs;
+using JRodrigoAV.Sitio.Models.Decks;
+using JRodrigoAV.Sitio.Models.Game;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
+
 
 namespace JRodrigoAV.Sitio
 {
@@ -10,6 +14,10 @@ namespace JRodrigoAV.Sitio
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddSingleton<WhiteDeck>();
+            services.AddSingleton<BlackDeck>();
+            services.AddSingleton<Players>();
+            services.AddSignalR();
             services.AddMvc();
         }
 
@@ -21,7 +29,11 @@ namespace JRodrigoAV.Sitio
                 app.UseDeveloperExceptionPage();
             }
 
+            app.UseSignalR(routes => routes.MapHub<GameHub>("game"));
+            
             app.UseMvcWithDefaultRoute();
+
+            app.UseStaticFiles();
         }
     }
 }
