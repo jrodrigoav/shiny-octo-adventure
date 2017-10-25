@@ -6,6 +6,7 @@ import { render } from 'react-dom';
 import { Players } from './players.jsx';
 import { Login } from './login.jsx';
 import { BlackCard } from './blackcard.jsx';
+import {WhiteCards} from './whitecards.jsx';
 
 class App extends React.Component {
     constructor(props) {
@@ -15,7 +16,8 @@ class App extends React.Component {
             gameStarted: false,
             joined: false,
             players: [],
-            gameCard: {}
+            gameCard: {},
+            whiteCards: []
         };
         this.joinGame = this.joinGame.bind(this);
         this.startStopGame = this.startStopGame.bind(this);
@@ -27,7 +29,8 @@ class App extends React.Component {
         component.setState({
             joined: false,
             players: [],
-            gameStarted: false
+            gameStarted: false,
+            whiteCards: []
         });
     }
     setupHub() {
@@ -66,7 +69,8 @@ class App extends React.Component {
             //console.log(result);
             this.setState({
                 joined: result.joined,
-                gameStarted: result.gameState.started
+                gameStarted: result.gameState.started,
+                whiteCards: result.whiteCards
             });
         }), err => {
             console.log('Connection error');
@@ -93,14 +97,14 @@ class App extends React.Component {
                 this.setupHub();
             }
         } else {
-            var that=this;
+            var that = this;
             this.gameConnection.invoke('LeaveGame').then(() => {
                 this.setState({
                     joined: false,
                     players: []
                 });
                 this.gameConnection.stop().catch(err => console.log(`Error closing connection ${err}`));
-            },(event)=> that.resetClient(that));
+            }, (event) => that.resetClient(that));
         }
 
     }
@@ -120,6 +124,7 @@ class App extends React.Component {
         const playerName = this.state.playerName;
         const players = this.state.players;
         const blackCard = this.state.gameCard;
+        const whiteCards = this.state.whiteCards;
         return <div className="row" >
             <div className="col-md-12 col-lg">
                 <Login joined={isJoined} started={isStarted} onJoin={this.joinGame} playerName={playerName} handleInput={this.handleInputChange} startStopGame={this.startStopGame} />
@@ -129,7 +134,11 @@ class App extends React.Component {
                 <BlackCard blackCard={blackCard} />
             </div>
             <div className="w-100 d-lg-none d-md-block"></div>
-            <div className="col-md-12 col-lg-8">Hi</div>
+            <div className="col-md-12 col-lg-8">
+                <div className="row">
+                    <WhiteCards cards={whiteCards} />
+                </div>
+            </div>
         </div>;
     }
 }

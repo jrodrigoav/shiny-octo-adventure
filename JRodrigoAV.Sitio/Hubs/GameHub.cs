@@ -29,7 +29,7 @@ namespace JRodrigoAV.Sitio.Hubs
             {
                 await Clients.All.InvokeAsync("PlayerJoined", _gameState.PlayerNames);
             }
-            return await Task.Run(() => new { Joined = result, GameState = _gameState });
+            return await Task.Run(() => new { Joined = result, GameState = _gameState ,WhiteCards=_gameState.DealCardsToPlayer() });
         }
 
         public async Task<bool> LeaveGame()
