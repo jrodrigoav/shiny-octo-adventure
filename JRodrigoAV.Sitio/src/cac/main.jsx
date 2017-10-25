@@ -35,7 +35,7 @@ class App extends React.Component {
         };
 
         this.gameConnection.on('PlayerJoined', (playerName) => {
-            console.log(`Player ${playerName} joined the game.`);
+            //console.log(`Player ${playerName} joined the game.`);
             var players = this.state.players.slice(0);
             players.push(playerName);
             this.setState({
@@ -44,7 +44,7 @@ class App extends React.Component {
         });
 
         this.gameConnection.on('PlayerLeft', (playerName) => {
-            console.log(`Player ${playerName} left the game.`);
+            //console.log(`Player ${playerName} left the game.`);
             var playerIndex = this.state.players.indexOf(playerName);
             var players = this.state.players.slice(0);
             players.splice(playerIndex, 1);
@@ -57,7 +57,7 @@ class App extends React.Component {
         this.gameConnection.on('GameStopped',()=>this.setState({gameStarted:false}));
 
         this.gameConnection.start().then(() => this.gameConnection.invoke('JoinGame', this.state.playerName).then(result => {
-            console.log(result);
+            //console.log(result);
             this.setState({
                 joined: result.joined,
                 gameStarted: result.gameState.started
