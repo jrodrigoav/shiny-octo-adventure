@@ -1,8 +1,8 @@
 ﻿"use strict";
-//var signalR = require('@aspnet/signalr-client/dist/browser/signalr-client-1.0.0-alpha2-final');
-import React from 'react';
+var signalR = require('@aspnet/signalr-client/dist/browser/signalr-clientES5-1.0.0-alpha2-final');
+//import React from 'react';
 import { render } from 'react-dom';
-import axios from 'axios';
+//import axios from 'axios';
 import { Login, Players } from './players.jsx';
 
 class App extends React.Component {
@@ -34,27 +34,22 @@ class App extends React.Component {
             console.log('Connection closed');
         };
 
-        this.gameConnection.on('PlayerJoined', (playerName) => {
-            //console.log(`Player ${playerName} joined the game.`);
-            var players = this.state.players.slice(0);
-            players.push(playerName);
+        this.gameConnection.on('PlayerJoined', (playerList) => {
+            //console.log(`Player ${playerName} joined the game.`);            
             this.setState({
-                players: players
+                players: playerList
             });
         });
 
-        this.gameConnection.on('PlayerLeft', (playerName) => {
-            //console.log(`Player ${playerName} left the game.`);
-            var playerIndex = this.state.players.indexOf(playerName);
-            var players = this.state.players.slice(0);
-            players.splice(playerIndex, 1);
+        this.gameConnection.on('PlayerLeft', (playerList) => {
+            //console.log(`Player ${playerName} left the game.`);            
             this.setState({
-                players: players
+                players: playerList
             });
         });
 
-        this.gameConnection.on('GameStarted',()=>this.setState({gameStarted:true}));
-        this.gameConnection.on('GameStopped',()=>this.setState({gameStarted:false}));
+        this.gameConnection.on('GameStarted', () => this.setState({ gameStarted: true }));
+        this.gameConnection.on('GameStopped', () => this.setState({ gameStarted: false }));
 
         this.gameConnection.start().then(() => this.gameConnection.invoke('JoinGame', this.state.playerName).then(result => {
             //console.log(result);
@@ -90,7 +85,7 @@ class App extends React.Component {
             this.gameConnection.invoke('LeaveGame').then(() => {
                 this.setState({
                     joined: false,
-                    players:[]
+                    players: []
                 });
                 this.gameConnection.stop().catch(err => console.log(`Error closing connection ${err}`));
             });
@@ -98,12 +93,11 @@ class App extends React.Component {
 
     }
 
-    startStopGame(event){
+    startStopGame(event) {
         event.preventDefault();
-        if(this.state.gameStarted)
-        {
+        if (this.state.gameStarted) {
             this.gameConnection.invoke('StopGame');
-        }else{
+        } else {
             this.gameConnection.invoke('StartGame');
         }
     }

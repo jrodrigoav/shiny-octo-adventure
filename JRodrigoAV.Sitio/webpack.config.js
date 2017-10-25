@@ -14,16 +14,24 @@ var config = {
     path: BUILD_DIR,
     filename: '[name].js'
   },
+  resolve: {
+    modules: ["src", "node_modules"]
+ },
   module: {
     loaders: [{
       test: /\.jsx?/,
       include: APP_DIR_CAC,
+      exclude: /node_modules/,
       loader: 'babel-loader'
     }]
   },
   plugins: [
+    new webpack.ProvidePlugin({
+      React: 'react',
+      axios: 'axios'
+    }),
     new UglifyJSPlugin({
-      parallel:true      
+      parallel: true      
     }),
     new webpack.DefinePlugin({
       'process.env': {

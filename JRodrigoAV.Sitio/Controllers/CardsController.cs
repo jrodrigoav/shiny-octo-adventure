@@ -1,4 +1,5 @@
 using JRodrigoAV.Sitio.Models.Decks;
+using JRodrigoAV.Sitio.Models.Game;
 using Microsoft.AspNetCore.Mvc;
 
 namespace JRodrigoAV.Sitio.Controllers
@@ -6,12 +7,14 @@ namespace JRodrigoAV.Sitio.Controllers
     [Route("api/cards")]
     public class CardsController : Controller
     {
+        private readonly GameState _gameState;
         private readonly WhiteDeck _whiteDeck;
         private readonly BlackDeck _blackDeck;
-        public CardsController(WhiteDeck whiteDeck, BlackDeck blackDeck)
+        public CardsController(GameState gameState, WhiteDeck whiteDeck, BlackDeck blackDeck)
         {
             _whiteDeck = whiteDeck;
             _blackDeck = blackDeck;
+            _gameState = gameState;
         }
 
         [HttpGet("whitedeck")]

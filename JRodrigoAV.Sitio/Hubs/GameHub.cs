@@ -27,7 +27,7 @@ namespace JRodrigoAV.Sitio.Hubs
             }
             if (result)
             {
-                await Clients.All.InvokeAsync("PlayerJoined", playerName);
+                await Clients.All.InvokeAsync("PlayerJoined", _gameState.PlayerNames);
             }
             return await Task.Run(() => new { Joined = result, GameState = _gameState });
         }
@@ -43,7 +43,7 @@ namespace JRodrigoAV.Sitio.Hubs
                 {
                     _gameState.StopGame();
                 }
-                await Clients.All.InvokeAsync("PlayerLeft", player.Name);
+                await Clients.All.InvokeAsync("PlayerLeft",_gameState.PlayerNames);
             }
             return await Task.Run(() => result);
         }
