@@ -1680,13 +1680,14 @@ var App = function (_React$Component) {
             players: []
         };
         _this.joinGame = _this.joinGame.bind(_this);
+        _this.startStopGame = _this.startStopGame.bind(_this);
         _this.handleInputChange = _this.handleInputChange.bind(_this);
         return _this;
     }
 
     _createClass(App, [{
-        key: 'componentDidMount',
-        value: function componentDidMount() {
+        key: 'setupHub',
+        value: function setupHub() {
             var _this2 = this;
 
             var transportType = signalR.TransportType.WebSockets;
@@ -1701,6 +1702,7 @@ var App = function (_React$Component) {
             this.gameConnection.onClosed = function (e) {
                 console.log('Connection closed');
             };
+
             this.gameConnection.on('PlayerJoined', function (playerName) {
                 console.log('Player ' + playerName + ' joined the game.');
                 var players = _this2.state.players.slice(0);
@@ -1720,10 +1722,28 @@ var App = function (_React$Component) {
                 });
             });
 
-            this.gameConnection.start().catch(function (err) {
+            this.gameConnection.on('GameStarted', function () {
+                return _this2.setState({ gameStarted: true });
+            });
+            this.gameConnection.on('GameStopped', function () {
+                return _this2.setState({ gameStarted: false });
+            });
+
+            this.gameConnection.start().then(function () {
+                return _this2.gameConnection.invoke('JoinGame', _this2.state.playerName).then(function (result) {
+                    console.log(result);
+                    _this2.setState({
+                        joined: result.joined,
+                        gameStarted: result.gameState.started
+                    });
+                });
+            }, function (err) {
                 console.log('Connection error');
             });
         }
+    }, {
+        key: 'componentDidMount',
+        value: function componentDidMount() {}
     }, {
         key: 'handleInputChange',
         value: function handleInputChange(event) {
@@ -1741,24 +1761,34 @@ var App = function (_React$Component) {
             event.preventDefault();
             if (this.state.joined === false) {
                 if (typeof this.state.playerName === "string") {
-                    this.gameConnection.invoke('JoinGame', this.state.playerName).then(function (joined) {
-                        _this3.setState({
-                            joined: joined
-                        });
-                    });
+                    this.setupHub();
                 }
             } else {
                 this.gameConnection.invoke('LeaveGame').then(function () {
                     _this3.setState({
                         joined: false
                     });
+                    _this3.gameConnection.stop().catch(function (err) {
+                        return console.log('Error closing connection ' + err);
+                    });
                 });
+            }
+        }
+    }, {
+        key: 'startStopGame',
+        value: function startStopGame(event) {
+            event.preventDefault();
+            if (this.state.gameStarted) {
+                this.gameConnection.invoke('StopGame');
+            } else {
+                this.gameConnection.invoke('StartGame');
             }
         }
     }, {
         key: 'render',
         value: function render() {
             var isJoined = this.state.joined;
+            var isStarted = this.state.gameStarted;
             var playerName = this.state.playerName;
             var players = this.state.players;
             return _react2.default.createElement(
@@ -1767,7 +1797,7 @@ var App = function (_React$Component) {
                 _react2.default.createElement(
                     'div',
                     { className: 'col-xs-12 col-sm-4' },
-                    _react2.default.createElement(_players.Login, { joined: isJoined, onJoin: this.joinGame, playerName: playerName, handleInput: this.handleInputChange }),
+                    _react2.default.createElement(_players.Login, { joined: isJoined, started: isStarted, onJoin: this.joinGame, playerName: playerName, handleInput: this.handleInputChange, startStopGame: this.startStopGame }),
                     _react2.default.createElement(_players.Players, { players: players })
                 ),
                 _react2.default.createElement('div', { className: 'col-xs-12 col-sm-8' })
@@ -22910,6 +22940,21 @@ var Login = exports.Login = function (_React$Component) {
             var playerName = this.props.playerName;
             var isJoined = this.props.joined;
             var players = null;
+            var isStarted = this.props.started;
+            var startButton = _react2.default.createElement(
+                "button",
+                { type: "button", className: "btn btn-success btn-sm", onClick: this.props.startStopGame },
+                "Start Game"
+            );
+            var stopButon = _react2.default.createElement(
+                "button",
+                { type: "button", className: "btn btn-danger btn-sm", onClick: this.props.startStopGame },
+                "Stop Game"
+            );
+            var gameButton = startButton;
+            if (isStarted) {
+                gameButton = stopButon;
+            }
             if (!isJoined) {
                 players = _react2.default.createElement(
                     "form",
@@ -22939,7 +22984,9 @@ var Login = exports.Login = function (_React$Component) {
                             "button",
                             { type: "submit", className: "btn btn-default btn-sm" },
                             "Leave"
-                        )
+                        ),
+                        "\xA0",
+                        gameButton
                     )
                 );
             }

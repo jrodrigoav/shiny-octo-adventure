@@ -6,6 +6,8 @@ namespace JRodrigoAV.Sitio.Models.Game
 
         public string Name { get; set; }
 
+        public string LowerCaseName => Name.ToLowerInvariant();
+
         public Player()
         {
 

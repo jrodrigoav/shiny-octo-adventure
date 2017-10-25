@@ -11,5 +11,6 @@ namespace JRodrigoAV.Sitio.Controllers
         public IActionResult Index()=> View();
 
         public IActionResult CAC() => View();
+
     }
 }
