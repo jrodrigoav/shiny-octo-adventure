@@ -12,5 +12,7 @@ namespace JRodrigoAV.Sitio.Controllers
 
         public IActionResult CAC() => View();
 
+        public IActionResult Hipster() => View();
+
     }
 }
