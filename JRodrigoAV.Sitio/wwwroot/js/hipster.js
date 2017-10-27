@@ -21176,6 +21176,8 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
+var _Utils = new _localstate.Utils();
+
 var App = function (_React$Component) {
     _inherits(App, _React$Component);
 
@@ -21184,9 +21186,7 @@ var App = function (_React$Component) {
 
         var _this = _possibleConstructorReturn(this, (App.__proto__ || Object.getPrototypeOf(App)).call(this, props));
 
-        _this.state = {
-            sharedState: _localstate.Utils.state()
-        };
+        _this.state = _Utils.state();
         _this.incCounter = _this.incCounter.bind(_this);
         return _this;
     }
@@ -21198,10 +21198,8 @@ var App = function (_React$Component) {
         key: 'incCounter',
         value: function incCounter(event) {
             event.preventDefault();
-            _localstate.Utils.incCounter();
-            this.setState({
-                sharedState: _localstate.Utils.state()
-            });
+            _Utils.incCounter();
+            this.setState(_Utils.state());
         }
     }, {
         key: 'render',
@@ -21219,8 +21217,8 @@ var App = function (_React$Component) {
                     ),
                     React.createElement(
                         'button',
-                        { type: 'button', onClick: this.incCounter },
-                        this.state.sharedState.Counter
+                        { type: 'button', className: 'btn btn-sm btn-default', onClick: this.incCounter },
+                        this.state.Counter
                     )
                 )
             );
@@ -21243,19 +21241,46 @@ var App = function (_React$Component) {
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-var Utils = exports.Utils = {
-    Counter: 0,
-    Text: "Hi",
-    incCounter: function incCounter() {
-        this.Counter++;
-    },
-    state: function state() {
-        return {
-            Counter: this.Counter,
-            Text: this.Text
-        };
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var instance = null;
+
+var Utils = exports.Utils = function () {
+    function Utils() {
+        _classCallCheck(this, Utils);
+
+        if (!instance) instance = this;
+
+        this.Time = new Date();
+        this.Counter = 0;
+        return instance;
     }
-};
+
+    _createClass(Utils, [{
+        key: "state",
+        value: function state() {
+            return {
+                Time: this.Time,
+                Counter: this.Counter
+            };
+        }
+    }, {
+        key: "printTime",
+        value: function printTime() {
+            console.log(this.Time);
+        }
+    }, {
+        key: "incCounter",
+        value: function incCounter() {
+            this.Counter++;
+        }
+    }]);
+
+    return Utils;
+}();
 
 /***/ })
 /******/ ]);
