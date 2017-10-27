@@ -3,29 +3,36 @@
     ViewData["Title"] = "Index";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-<script src="lib/signalr-client/signalr-client.js"></script>
-<script>
-    let transportType = signalR.TransportType[getParameterByName('transport')] || signalR.TransportType.WebSockets;
-    let logger = new signalR.ConsoleLogger(signalR.LogLevel.Information);
-    let connection = new signalR.HubConnection('/chat', { transport: transportType, logger: logger });
+<div class="jumbotron">
+    <h1 class="display-3">CAC .NET Core!</h1>
+    <p class="lead">Cards against Humanity.&trade;</p>
+</div>
 
-    connection.onclose(e => {
-        if (e) {
-            appendLine('Connection closed with error: ' + e, 'red');
-        }
-        else {
-            appendLine('Disconnected', 'green');
-        }
-    });
+@section scripts{
+    <script src="~/js/bundle.js"></script>
+}
+@*<script>
+        let transportType = signalR.TransportType[getParameterByName('transport')] || signalR.TransportType.WebSockets;
+        let logger = new signalR.ConsoleLogger(signalR.LogLevel.Information);
+        let connection = new signalR.HubConnection('/chat', { transport: transportType, logger: logger });
 
-    connection.on('SetUsersOnline', usersOnline => {
-        usersOnline.forEach(user => addUserOnline(user));
-    });
-
-    connection.on('UsersJoined', users => {
-        users.forEach(user => {
-            appendLine('User ' + user.name + ' joined the chat');
-            addUserOnline(user);
+        connection.onclose(e => {
+            if (e) {
+                appendLine('Connection closed with error: ' + e, 'red');
+            }
+            else {
+                appendLine('Disconnected', 'green');
+            }
         });
-    });
-</script>
+
+        connection.on('SetUsersOnline', usersOnline => {
+            usersOnline.forEach(user => addUserOnline(user));
+        });
+
+        connection.on('UsersJoined', users => {
+            users.forEach(user => {
+                appendLine('User ' + user.name + ' joined the chat');
+                addUserOnline(user);
+            });
+        });
+    </script>*@
