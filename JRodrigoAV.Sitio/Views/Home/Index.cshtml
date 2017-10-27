@@ -1,7 +1,5 @@
-﻿
-@{
-    ViewData["Title"] = "Index";
-    Layout="~/Views/Shared/_Layout.cshtml";
+﻿@{
+    ViewBag.Title = "Index";    
 }
 
 <div class="jumbotron">
@@ -9,6 +7,6 @@
     <p class="lead">My personal portfolio of experiments.</p>
     <hr class="my-4">   
     <p class="lead">
-        <a class="btn btn-primary btn-lg" href="@Url.Action("Index","CAC")" role="button">Play CAC</a>
+        <a class="btn btn-primary btn-lg" href="@Url.Action("CAC","Home")" role="button">Play CAC</a>
     </p>
 </div>

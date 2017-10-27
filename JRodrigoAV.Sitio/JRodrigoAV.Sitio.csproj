@@ -3,16 +3,11 @@
     <TargetFramework>netcoreapp2.0</TargetFramework>
     <PublishDir>$(OutDir)_PublishedWebsites\NetCoreWebApp\</PublishDir>
   </PropertyGroup>
-  <ItemGroup>
-    <Compile Remove="_PublishedWebsites\**" />
-    <Content Remove="_PublishedWebsites\**" />
-    <EmbeddedResource Remove="_PublishedWebsites\**" />
-    <None Remove="_PublishedWebsites\**" />
-  </ItemGroup>
-  
+
   <ItemGroup>    
-    <Folder Include="wwwroot\" />    
-    <Folder Include="wwwroot\js\" />
+    <Folder Include="wwwroot\" />
+    <Content Update="package.json" CopyToPublishDirectory="Never" />
+    <Content Update="package-lock.json" CopyToPublishDirectory="Never" />
   </ItemGroup>
 
   <ItemGroup>

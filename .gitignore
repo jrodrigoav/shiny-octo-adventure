@@ -154,6 +154,7 @@ $RECYCLE.BIN/
 
 # Mac desktop service store files
 .DS_Store
+.vscode/
 /.vs/
 .vs/
 .vs
@@ -163,3 +164,5 @@ packages
 /.vs/config/applicationhost.config
 _PublishedWebsites
 node_modules/
+JRodrigoAV.Sitio/node_modules/
+JRodrigoAV.Sitio/Publish.ps1

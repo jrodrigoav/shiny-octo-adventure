@@ -1,8 +1,10 @@
 ﻿using JRodrigoAV.Sitio.Hubs;
-using JRodrigoAV.Sitio.StartupServices;
+using JRodrigoAV.Sitio.Models.Decks;
+using JRodrigoAV.Sitio.Models.Game;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
+
 
 namespace JRodrigoAV.Sitio
 {
@@ -11,14 +13,13 @@ namespace JRodrigoAV.Sitio
         // This method gets called by the runtime. Use this method to add services to the container.
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
-        {           
-            services.AddMvc();
-
+        {            
+            services.AddSingleton<WhiteDeck>();
+            services.AddSingleton<BlackDeck>();
+            services.AddSingleton<Players>();
+            services.AddSingleton<GameState>();
             services.AddSignalR();
-
-            //services.AddSingleton(typeof(DefaultHubLifetimeManager<>), typeof(DefaultHubLifetimeManager<>));
-            //services.AddSingleton(typeof(HubLifetimeManager<>), typeof(DefaultPresenceHublifetimeManager<>));
-            services.AddSingleton(typeof(IUserTracker<>), typeof(InMemoryUserTracker<>));
+            services.AddMvc();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -29,14 +30,11 @@ namespace JRodrigoAV.Sitio
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseStaticFiles();
-
+            app.UseSignalR(routes => routes.MapHub<GameHub>("game"));
+            
             app.UseMvcWithDefaultRoute();
 
-            app.UseSignalR(routes =>
-            {
-                routes.MapHub<Chat>("chat");
-            });
+            app.UseStaticFiles();
         }
     }
 }

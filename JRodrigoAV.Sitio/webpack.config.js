@@ -1,79 +1,46 @@
-﻿/// <binding AfterBuild='Run - Development' />
-"use strict";
-const HTMLWebpackPlugin = require('html-webpack-plugin');
+﻿"use strict";
+const path = require('path');
 const webpack = require('webpack');
+const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
 
-module.exports = {
-    entry: {
-        "cac": "./Scripts/cac/main.js",
-        "sandbox-vue": "./Scripts/sandbox-vue/main.js"
-    },
-    output: {
-        filename: './wwwroot/js/[name].bundle.js',
-        chunkFilename: './wwwroot/js/[name].bundle.js'
-    },
-    plugins: [
-        //    new webpack.optimize.UglifyJsPlugin({
-        //        sourceMap: true,
-        //        compress: {
-        //            warnings: false
-        //        }
-        //    })
-    ],
-    module: {
-        rules: [
-            {
-                test: /\.vue$/,
-                loader: 'vue-loader',
-                options: {
-                    loaders: {
+var BUILD_DIR = path.resolve(__dirname, 'wwwroot/js');
+var APP_DIR_CAC = path.resolve(__dirname, 'src/cac');
+var APP_DIR_HIPSTER = path.resolve(__dirname, 'src/hipster');
 
-                        // Since sass-loader (weirdly) has SCSS as its default parse mode, we map
-                        // the "scss" and "sass" values for the lang attribute to the right configs here.
-                        // other preprocessors should work out of the box, no loader config like this necessary.
-                        'scss': 'vue-style-loader!css-loader!sass-loader',
-                        'sass': 'vue-style-loader!css-loader!sass-loader?indentedSyntax'
-                    }
-                    // other vue-loader options go here
-                }
-            },
-            {
-                test: /\.js$/,
-                loader: 'babel-loader',
-                exclude: /node_modules/,
-                query: {
-                    babelrc: false,
-                    "presets": [
-                        ["env", { "modules": false }]
-                    ]
-                }
-            }
-        ]
-    },
-    resolve: {
-        alias: {
-            'vue$': 'vue/dist/vue.esm.js'
-        }
-    }
+var config = {
+  entry: {
+    cac: path.resolve(APP_DIR_CAC, 'main.jsx'),
+    hipster: path.resolve(APP_DIR_HIPSTER, 'main.jsx')
+  },
+  output: {
+    path: BUILD_DIR,
+    filename: '[name].js'
+  },
+  resolve: {
+    modules: ["src", "node_modules"]
+  },
+  module: {
+    loaders: [{
+      test: /\.jsx?/,
+      include: [APP_DIR_CAC, APP_DIR_HIPSTER],
+      exclude: /node_modules/,
+      loader: 'babel-loader'
+    }]
+  },
+  plugins: [
+    new webpack.ProvidePlugin({
+      React: 'react',
+      axios: 'axios'
+    }),
+    /*new UglifyJSPlugin({
+      parallel: true
+    }),
+    new webpack.DefinePlugin({
+      'process.env': {
+        'NODE_ENV': JSON.stringify('production')
+      }
+    })*/
+  ],
+  //devtool: 'cheap-module-source-map'
 };
-
-if (process.env.NODE_ENV === 'production') {
-    module.exports.devtool = '#source-map'
-    // http://vue-loader.vuejs.org/en/workflow/production.html
-    module.exports.plugins = (module.exports.plugins || []).concat([
-        new webpack.DefinePlugin({
-            'process.env': {
-                NODE_ENV: '"production"'
-            }
-        }),
-        new webpack.optimize.UglifyJsPlugin({
-            sourceMap: true,
-            compress: {
-                warnings: false
-            }
-        }),
-        new webpack.LoaderOptionsPlugin({
-            minimize: true
-        })
-    ])
-}
+module.exports = config;
