@@ -21199,7 +21199,6 @@ var App = function (_React$Component) {
         value: function incCounter(event) {
             event.preventDefault();
             _localstate.Utils.incCounter();
-            console.log(this.state.sharedState);
             this.setState({
                 sharedState: _localstate.Utils.state()
             });

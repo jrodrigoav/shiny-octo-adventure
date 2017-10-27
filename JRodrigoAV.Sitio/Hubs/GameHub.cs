@@ -4,14 +4,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using JRodrigoAV.Sitio.Models.Game;
+using JRodrigoAV.Sitio.StartupServices;
 
 namespace JRodrigoAV.Sitio.Hubs
 {
-    public class GameHub : Hub
+    public class GameHub : HubWithPresence
     {
         private readonly GameState _gameState;
         private readonly Players _players;
-        public GameHub(Players players, GameState gameState)
+        public GameHub(Players players, GameState gameState,IUserTracker<GameHub> userTracker):base(userTracker)
         {
             _players = players;
             _gameState = gameState;
