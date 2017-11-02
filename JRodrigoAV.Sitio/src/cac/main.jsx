@@ -1,23 +1,12 @@
 ﻿"use strict";
-var signalR = require('@aspnet/signalr-client/dist/browser/signalr-clientES5-1.0.0-alpha2-final');
-//import React from 'react';
 import { render } from 'react-dom';
-//import axios from 'axios';
-import { Players } from './players.jsx';
-import { Login } from './login.jsx';
-import { BlackCard } from './blackcard.jsx';
-import {WhiteCards} from './whitecards.jsx';
-
-class App extends React.Component {
+import { App } from './app.jsx';
+/*
+class Old extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            playerName: '',
-            gameStarted: false,
-            joined: false,
-            players: [],
-            gameCard: {},
-            whiteCards: []
+            playerName: ''
         };
         this.joinGame = this.joinGame.bind(this);
         this.startStopGame = this.startStopGame.bind(this);
@@ -94,6 +83,8 @@ class App extends React.Component {
         event.preventDefault();
         if (this.state.joined === false) {
             if (typeof (this.state.playerName) === "string") {
+                var utils = new Utils();
+                utils.setPlayerName(this.state.playerName);
                 this.setupHub();
             }
         } else {
@@ -119,9 +110,10 @@ class App extends React.Component {
     }
 
     render() {
+        const utils = new Utils();
         const isJoined = this.state.joined;
         const isStarted = this.state.gameStarted;
-        const playerName = this.state.playerName;
+        const playerName = utils.playerName;
         const players = this.state.players;
         const blackCard = this.state.gameCard;
         const whiteCards = this.state.whiteCards;
@@ -142,5 +134,5 @@ class App extends React.Component {
         </div>;
     }
 }
-
+*/
 render(<App />, document.getElementById('app'));

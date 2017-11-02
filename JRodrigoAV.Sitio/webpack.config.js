@@ -5,12 +5,10 @@ const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
 
 var BUILD_DIR = path.resolve(__dirname, 'wwwroot/js');
 var APP_DIR_CAC = path.resolve(__dirname, 'src/cac');
-var APP_DIR_HIPSTER = path.resolve(__dirname, 'src/hipster');
 
 var config = {
   entry: {
-    cac: path.resolve(APP_DIR_CAC, 'main.jsx'),
-    hipster: path.resolve(APP_DIR_HIPSTER, 'main.jsx')
+    cac: path.resolve(APP_DIR_CAC, 'main.jsx'),    
   },
   output: {
     path: BUILD_DIR,
@@ -22,7 +20,7 @@ var config = {
   module: {
     loaders: [{
       test: /\.jsx?/,
-      include: [APP_DIR_CAC, APP_DIR_HIPSTER],
+      include: [APP_DIR_CAC],
       exclude: /node_modules/,
       loader: 'babel-loader'
     }]

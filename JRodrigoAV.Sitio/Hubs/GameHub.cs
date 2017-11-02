@@ -1,18 +1,17 @@
-﻿using Microsoft.AspNetCore.SignalR;
+﻿using JRodrigoAV.Sitio.Models.Game;
+using Microsoft.AspNetCore.SignalR;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using JRodrigoAV.Sitio.Models.Game;
-using JRodrigoAV.Sitio.StartupServices;
 
 namespace JRodrigoAV.Sitio.Hubs
 {
-    public class GameHub : HubWithPresence
+    public class GameHub : Hub
     {
         private readonly GameState _gameState;
         private readonly Players _players;
-        public GameHub(Players players, GameState gameState,IUserTracker<GameHub> userTracker):base(userTracker)
+        public GameHub(Players players, GameState gameState)
         {
             _players = players;
             _gameState = gameState;
@@ -20,17 +19,12 @@ namespace JRodrigoAV.Sitio.Hubs
         public async Task<object> JoinGame(string playerName)
         {
             bool result = false;
-            string lowerCaseName = playerName.ToLowerInvariant();
-            if (!_players.ContainsKey(lowerCaseName))
-            {
-                _players.Add(lowerCaseName, new Player(this.Context.ConnectionId, playerName));
-                result = true;
-            }
+            result = _players.AddPlayer(playerName, Context.ConnectionId);
             if (result)
             {
                 await Clients.All.InvokeAsync("PlayerJoined", _gameState.PlayerNames);
             }
-            return await Task.Run(() => new { Joined = result, GameState = _gameState ,WhiteCards=_gameState.DealCardsToPlayer() });
+            return await Task.Run(() => new { Joined = result, GameState = _gameState, WhiteCards = _gameState.DealCardsToPlayer() });
         }
 
         public async Task<bool> LeaveGame()
