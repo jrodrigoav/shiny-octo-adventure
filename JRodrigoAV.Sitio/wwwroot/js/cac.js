@@ -22036,14 +22036,30 @@ var App = exports.App = function (_React$Component) {
         var _this = _possibleConstructorReturn(this, (App.__proto__ || Object.getPrototypeOf(App)).call(this, props));
 
         _this.state = {
-            playerName: ''
+            playerName: '',
+            started: false,
+            joined: false,
+            players: [],
+            gameCard: {},
+            whiteCards: []
         };
         _this.handleInputChange = _this.handleInputChange.bind(_this);
         _this.joinGame = _this.joinGame.bind(_this);
+        _this.startStopGame = _this.startStopGame.bind(_this);
         return _this;
     }
 
     _createClass(App, [{
+        key: 'resetClient',
+        value: function resetClient(component) {
+            component.setState(_localstate2.default.setMultiple({
+                joined: false,
+                players: [],
+                started: false,
+                whiteCards: []
+            }));
+        }
+    }, {
         key: 'setupHub',
         value: function setupHub() {
             var _this2 = this;
@@ -22069,17 +22085,21 @@ var App = exports.App = function (_React$Component) {
                 _this2.setState(_localstate2.default.setPlayerList(playerList));
             });
 
-            //this.gameConnection.on('GameStarted', (gameState) => this.setState({ gameStarted: gameState.started, gameCard: gameState.gameCard }));
-            //this.gameConnection.on('GameStopped', () => this.setState({ gameStarted: false, gameCard: {} }));
+            this.gameConnection.on('GameStarted', function (gameState) {
+                return _this2.setState(_localstate2.default.setMultiple({ started: gameState.started, gameCard: gameState.gameCard }));
+            });
+            this.gameConnection.on('GameStopped', function () {
+                return _this2.setState(_localstate2.default.setMultiple({ started: false, gameCard: {} }));
+            });
 
             this.gameConnection.start().then(function () {
                 return _this2.gameConnection.invoke('JoinGame', _this2.state.playerName).then(function (result) {
                     //console.log(result);
-                    _this2.setState({
+                    _this2.setState(_localstate2.default.setMultiple({
                         joined: result.joined,
-                        gameStarted: result.gameState.started,
+                        started: result.gameState.started,
                         whiteCards: result.whiteCards
-                    });
+                    }));
                 });
             }, function (err) {
                 console.log('Connection error');
@@ -22100,17 +22120,53 @@ var App = exports.App = function (_React$Component) {
     }, {
         key: 'joinGame',
         value: function joinGame(event) {
+            var _this3 = this;
+
             event.preventDefault();
-            _localstate2.default.setPlayerName(this.state.playerName);
+            if (this.state.joined === false) {
+                _localstate2.default.setPlayerName(this.state.playerName);
+                this.setupHub();
+            } else {
+                var that = this;
+                this.gameConnection.invoke('LeaveGame').then(function () {
+                    _this3.setState(_localstate2.default.setMultiple({
+                        joined: false,
+                        players: []
+                    }));
+                    _this3.gameConnection.stop().catch(function (err) {
+                        return console.log('Error closing connection ' + err);
+                    });
+                }, function (event) {
+                    return that.resetClient(that);
+                });
+            }
+        }
+    }, {
+        key: 'startStopGame',
+        value: function startStopGame(event) {
+            event.preventDefault();
+            if (this.state.started) {
+                this.gameConnection.invoke('StopGame');
+            } else {
+                this.gameConnection.invoke('StartGame');
+            }
         }
     }, {
         key: 'render',
         value: function render() {
             var playerName = this.state.playerName;
+            var players = this.state.players;
+            var isJoined = this.state.joined;
+            var isStarted = this.state.started;
             return _react2.default.createElement(
                 'div',
                 { className: 'row' },
-                _react2.default.createElement('div', { className: 'col-md-12 col-lg' }),
+                _react2.default.createElement(
+                    'div',
+                    { className: 'col-md-12 col-lg' },
+                    _react2.default.createElement(_login.Login, { joined: isJoined, started: isStarted, onJoin: this.joinGame, playerName: playerName, handleInput: this.handleInputChange, startStopGame: this.startStopGame }),
+                    _react2.default.createElement(_players.Players, { players: players })
+                ),
                 _react2.default.createElement('div', { className: 'col-md-12 col-lg' }),
                 _react2.default.createElement('div', { className: 'w-100 d-lg-none d-md-block' }),
                 _react2.default.createElement(
@@ -23108,7 +23164,7 @@ var Login = exports.Login = function (_React$Component) {
         value: function render() {
             var playerName = this.props.playerName;
             var isJoined = this.props.joined;
-            var players = null;
+            var renderResult = null;
             var isStarted = this.props.started;
             var startButton = React.createElement(
                 "button",
@@ -23125,7 +23181,7 @@ var Login = exports.Login = function (_React$Component) {
                 gameButton = stopButon;
             }
             if (!isJoined) {
-                players = React.createElement(
+                renderResult = React.createElement(
                     "form",
                     { onSubmit: this.props.onJoin },
                     React.createElement("input", { name: "playerName", placeholder: "Player Name", type: "text", className: "form-control", value: playerName, onChange: this.props.handleInput, required: true }),
@@ -23136,7 +23192,7 @@ var Login = exports.Login = function (_React$Component) {
                     )
                 );
             } else {
-                players = React.createElement(
+                renderResult = React.createElement(
                     "form",
                     { onSubmit: this.props.onJoin },
                     React.createElement(
@@ -23159,7 +23215,7 @@ var Login = exports.Login = function (_React$Component) {
                     )
                 );
             }
-            return players;
+            return renderResult;
         }
     }]);
 
@@ -23305,7 +23361,7 @@ var Utils = function () {
         if (!instance) instance = this;
         this._state = {
             playerName: '',
-            gameStarted: false,
+            started: false,
             joined: false,
             players: [],
             gameCard: {},

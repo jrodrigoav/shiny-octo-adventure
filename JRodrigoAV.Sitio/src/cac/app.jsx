@@ -7,18 +7,32 @@ import { Players } from './players.jsx';
 import { Login } from './login.jsx';
 import { BlackCard } from './blackcard.jsx';
 import { WhiteCards } from './whitecards.jsx';
-import Utils  from './localstate';
+import Utils from './localstate';
 
 export class App extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            playerName: ''
+            playerName: '',
+            started: false,
+            joined: false,
+            players: [],
+            gameCard: {},
+            whiteCards: []
         };
         this.handleInputChange = this.handleInputChange.bind(this);
         this.joinGame = this.joinGame.bind(this);
+        this.startStopGame = this.startStopGame.bind(this);
     }
     gameConnection
+    resetClient(component) {
+        component.setState(Utils.setMultiple({
+            joined: false,
+            players: [],
+            started: false,
+            whiteCards: []
+        }));
+    }
     setupHub() {
         var transportType = signalR.TransportType.WebSockets;
         //can also be ServerSentEvents or LongPolling
@@ -34,7 +48,7 @@ export class App extends React.Component {
         };
 
 
-        this.gameConnection.on('PlayerJoined', (playerList) => {            
+        this.gameConnection.on('PlayerJoined', (playerList) => {
             this.setState(Utils.setPlayerList(playerList));
         });
 
@@ -42,16 +56,16 @@ export class App extends React.Component {
             this.setState(Utils.setPlayerList(playerList));
         });
 
-        //this.gameConnection.on('GameStarted', (gameState) => this.setState({ gameStarted: gameState.started, gameCard: gameState.gameCard }));
-        //this.gameConnection.on('GameStopped', () => this.setState({ gameStarted: false, gameCard: {} }));
+        this.gameConnection.on('GameStarted', (gameState) => this.setState(Utils.setMultiple({ started: gameState.started, gameCard: gameState.gameCard })));
+        this.gameConnection.on('GameStopped', () => this.setState(Utils.setMultiple({ started: false, gameCard: {} })));
 
         this.gameConnection.start().then(() => this.gameConnection.invoke('JoinGame', this.state.playerName).then(result => {
             //console.log(result);
-            this.setState({
+            this.setState(Utils.setMultiple({
                 joined: result.joined,
-                gameStarted: result.gameState.started,
+                started: result.gameState.started,
                 whiteCards: result.whiteCards
-            });
+            }));
         }), err => {
             console.log('Connection error');
         });
@@ -71,25 +85,48 @@ export class App extends React.Component {
     }
 
     joinGame(event) {
-        event.preventDefault();
-        Utils.setPlayerName(this.state.playerName);   
+        event.preventDefault();        
+        if (this.state.joined === false) {           
+                Utils.setPlayerName(this.state.playerName);
+                this.setupHub();            
+        } else {
+            var that = this;
+            this.gameConnection.invoke('LeaveGame').then(() => {
+                this.setState(Utils.setMultiple({
+                    joined: false,
+                    players: []
+                }));
+                this.gameConnection.stop().catch(err => console.log(`Error closing connection ${err}`));
+            }, (event) => that.resetClient(that));
+        }
     }
 
+    startStopGame(event) {
+        event.preventDefault();
+        if (this.state.started) {
+            this.gameConnection.invoke('StopGame');
+        } else {
+            this.gameConnection.invoke('StartGame');
+        }
+    }
 
-
-    render() {        
-        const playerName = this.state.playerName;      
+    render() {
+        const playerName = this.state.playerName;
+        const players = this.state.players;
+        const isJoined = this.state.joined;
+        const isStarted = this.state.started;
         return <div className="row" >
             <div className="col-md-12 col-lg">
-                
+                <Login joined={isJoined} started={isStarted} onJoin={this.joinGame} playerName={playerName} handleInput={this.handleInputChange} startStopGame={this.startStopGame} />
+                <Players players={players} />
             </div>
             <div className="col-md-12 col-lg">
-            
+
             </div>
             <div className="w-100 d-lg-none d-md-block"></div>
             <div className="col-md-12 col-lg-8">
                 <div className="row">
-            
+
                 </div>
             </div>
         </div>;

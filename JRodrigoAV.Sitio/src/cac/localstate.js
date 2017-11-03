@@ -5,7 +5,7 @@ class Utils{
         if (!instance) instance = this;  
         this._state = {
             playerName: '',
-            gameStarted:false,
+            started:false,
             joined: false,
             players:[],
             gameCard:{},
