@@ -22067,7 +22067,7 @@ var App = exports.App = function (_React$Component) {
             var transportType = signalR.TransportType.WebSockets;
             //can also be ServerSentEvents or LongPolling
             var logger = new signalR.ConsoleLogger(signalR.LogLevel.Error);
-            var gameHub = new signalR.HttpConnection('http://' + document.location.host + '/game', {
+            var gameHub = new signalR.HttpConnection(document.location.protocol + '//' + document.location.host + '/game', {
                 transport: transportType,
                 logger: logger
             });
