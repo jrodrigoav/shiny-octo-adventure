@@ -26,11 +26,13 @@ export class App extends React.Component {
     }
     gameConnection
     resetClient(component) {
+        if (component === undefined) component = this;
         component.setState(Utils.setMultiple({
             joined: false,
             players: [],
             started: false,
-            whiteCards: []
+            whiteCards: [],
+            gameCard: {}
         }));
     }
     setupHub() {
@@ -60,7 +62,7 @@ export class App extends React.Component {
         this.gameConnection.on('GameStopped', () => this.setState(Utils.setMultiple({ started: false, gameCard: {} })));
 
         this.gameConnection.start().then(() => this.gameConnection.invoke('JoinGame', this.state.playerName).then(result => {
-            //console.log(result);
+            
             this.setState(Utils.setMultiple({
                 joined: result.joined,
                 started: result.gameState.started,
@@ -92,10 +94,7 @@ export class App extends React.Component {
         } else {
             var that = this;
             this.gameConnection.invoke('LeaveGame').then(() => {
-                this.setState(Utils.setMultiple({
-                    joined: false,
-                    players: []
-                }));
+                that.resetClient();
                 this.gameConnection.stop().catch(err => console.log(`Error closing connection ${err}`));
             }, (event) => that.resetClient(that));
         }
@@ -115,13 +114,14 @@ export class App extends React.Component {
         const players = this.state.players;
         const isJoined = this.state.joined;
         const isStarted = this.state.started;
+        const blackCard = this.state.gameCard;
         return <div className="row" >
             <div className="col-md-12 col-lg">
                 <Login joined={isJoined} started={isStarted} onJoin={this.joinGame} playerName={playerName} handleInput={this.handleInputChange} startStopGame={this.startStopGame} />
                 <Players players={players} />
             </div>
             <div className="col-md-12 col-lg">
-
+                <BlackCard blackCard={blackCard} />
             </div>
             <div className="w-100 d-lg-none d-md-block"></div>
             <div className="col-md-12 col-lg-8">

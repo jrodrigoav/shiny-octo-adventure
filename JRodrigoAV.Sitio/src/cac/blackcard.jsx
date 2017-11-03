@@ -13,7 +13,7 @@ export class BlackCard extends React.Component {
             result = 'N/A';
         }
         return <div className="card">
-            <div className="card-body text-light bg-dark">
+            <div className="card-body text-light bg-dark rounded">
                 {result}
             </div>
         </div>;
