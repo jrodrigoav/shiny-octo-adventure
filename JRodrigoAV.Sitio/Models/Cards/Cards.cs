@@ -40,6 +40,7 @@ namespace JRodrigoAV.Sitio.Models.Cards
 
     public class WhiteCard : BaseCard
     {
+        bool Selected { get; set; }
         public WhiteCard()
         {
 

@@ -3,11 +3,12 @@ var signalR = require('@aspnet/signalr-client/dist/browser/signalr-clientES5-1.0
 import React from 'react';
 import { render } from 'react-dom';
 import axios from 'axios';
+import _ from 'lodash';
 import { Players } from './players.jsx';
 import { Login } from './login.jsx';
 import { BlackCard } from './blackcard.jsx';
 import { WhiteCards } from './whitecards.jsx';
-import Utils from './localstate';
+//import Utils from './localstate';
 
 export class App extends React.Component {
     constructor(props) {
@@ -18,22 +19,25 @@ export class App extends React.Component {
             joined: false,
             players: [],
             gameCard: {},
-            whiteCards: []
+            whiteCards: [],
+            selectedCards: []
         };
         this.handleInputChange = this.handleInputChange.bind(this);
         this.joinGame = this.joinGame.bind(this);
         this.startStopGame = this.startStopGame.bind(this);
+        this.selectCard = this.selectCard.bind(this);
     }
     gameConnection
     resetClient(component) {
         if (component === undefined) component = this;
-        component.setState(Utils.setMultiple({
+        component.setState({
             joined: false,
             players: [],
             started: false,
             whiteCards: [],
+            selectedCards: [],
             gameCard: {}
-        }));
+        });
     }
     setupHub() {
         var transportType = signalR.TransportType.WebSockets;
@@ -43,31 +47,34 @@ export class App extends React.Component {
             transport: transportType,
             logger: logger
         });
+        var that = this;
         this.gameConnection = new signalR.HubConnection(gameHub, logger);
 
-        this.gameConnection.onClosed = e => {
+        that.gameConnection.onClosed = e => {
             console.log('Connection closed');
         };
 
 
-        this.gameConnection.on('PlayerJoined', (playerList) => {
-            this.setState(Utils.setPlayerList(playerList));
+        that.gameConnection.on('PlayerJoined', (playerList) => {
+            that.setState({ players: playerList });
         });
 
-        this.gameConnection.on('PlayerLeft', (playerList) => {
-            this.setState(Utils.setPlayerList(playerList));
+        that.gameConnection.on('PlayerLeft', (playerList) => {
+            that.setState({ players: playerList });
         });
 
-        this.gameConnection.on('GameStarted', (gameState) => this.setState(Utils.setMultiple({ started: gameState.started, gameCard: gameState.gameCard })));
-        this.gameConnection.on('GameStopped', () => this.setState(Utils.setMultiple({ started: false, gameCard: {} })));
+        that.gameConnection.on('GameStarted', (gameState) => that.setState({ started: gameState.started, gameCard: gameState.gameCard }));
+        that.gameConnection.on('GameStopped', () => that.setState({ started: false, gameCard: {} }));
 
-        this.gameConnection.start().then(() => this.gameConnection.invoke('JoinGame', this.state.playerName).then(result => {
-            
-            this.setState(Utils.setMultiple({
+
+        that.gameConnection.start().then(() => that.gameConnection.invoke('JoinGame', that.state.playerName).then(result => {
+
+            that.setState({
                 joined: result.joined,
                 started: result.gameState.started,
-                whiteCards: result.whiteCards
-            }));
+                whiteCards: result.whiteCards,
+                selectedCards: []
+            });
         }), err => {
             console.log('Connection error');
         });
@@ -87,10 +94,9 @@ export class App extends React.Component {
     }
 
     joinGame(event) {
-        event.preventDefault();        
-        if (this.state.joined === false) {           
-                Utils.setPlayerName(this.state.playerName);
-                this.setupHub();            
+        event.preventDefault();
+        if (this.state.joined === false) {
+            this.setupHub();
         } else {
             var that = this;
             this.gameConnection.invoke('LeaveGame').then(() => {
@@ -109,12 +115,35 @@ export class App extends React.Component {
         }
     }
 
+    selectCard(card) {
+        var that = this;
+        var cards = that.state.whiteCards.slice(0);
+        var selectedCards = that.state.selectedCards.slice(0);
+        var pick = that.state.gameCard.pick;
+        _.forEach(cards, function (o) {
+            if (o.id === card.id) {
+                if (o.selected) {
+                    o.selected = false;
+                    _.remove(selectedCards, function (sc) {
+                        return sc === card.id;
+                    });
+                }
+                else if (selectedCards.length < pick) {
+                    o.selected = true;
+                    selectedCards.push(o.id);
+                }
+            }
+        });
+        that.setState({ whiteCards: cards, selectedCards: selectedCards });
+    }
+
     render() {
         const playerName = this.state.playerName;
         const players = this.state.players;
         const isJoined = this.state.joined;
         const isStarted = this.state.started;
         const blackCard = this.state.gameCard;
+        const whiteCards = this.state.whiteCards;
         return <div className="row" >
             <div className="col-md-12 col-lg">
                 <Login joined={isJoined} started={isStarted} onJoin={this.joinGame} playerName={playerName} handleInput={this.handleInputChange} startStopGame={this.startStopGame} />
@@ -126,7 +155,7 @@ export class App extends React.Component {
             <div className="w-100 d-lg-none d-md-block"></div>
             <div className="col-md-12 col-lg-8">
                 <div className="row">
-
+                    <WhiteCards cards={whiteCards} blackcard={blackCard} whiteCardSelected={this.selectCard} />                    
                 </div>
             </div>
         </div>;

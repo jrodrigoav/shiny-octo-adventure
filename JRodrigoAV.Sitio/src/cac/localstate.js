@@ -14,7 +14,7 @@ class Utils{
         return instance;
     }
     setMultiple(propertiesObject = {}) {
-        this._state = Object.assign({}, this.state, propertiesObject);  
+        this._state = Object.assign({}, this._state, propertiesObject);          
         return this.state();
     }
 
@@ -22,7 +22,7 @@ class Utils{
         if (typeof (playerName) === 'string' && playerName) {
            this.setMultiple({
                 playerName: playerName
-            });            
+            });               
         }
         return this.state();
     }
