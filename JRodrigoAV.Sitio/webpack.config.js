@@ -5,11 +5,12 @@ const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
 
 var BUILD_DIR = path.resolve(__dirname, 'wwwroot/js');
 var APP_DIR_CAC = path.resolve(__dirname, 'src/cac');
-
+var APP_DIR_SOLICACRIO = path.resolve(__dirname, 'src/solicacrio');
 
 module.exports = {
     entry: {
         cac: path.resolve(APP_DIR_CAC, 'main.jsx'),
+        solicacrio: path.resolve(APP_DIR_SOLICACRIO, 'main.jsx')        
     },
     output: {
         path: BUILD_DIR,
@@ -21,7 +22,7 @@ module.exports = {
     module: {
         loaders: [{
             test: /\.jsx?/,
-            include: [APP_DIR_CAC],
+            include: [APP_DIR_CAC, APP_DIR_SOLICACRIO],
             exclude: /node_modules/,
             loader: 'babel-loader'
         }]
@@ -29,6 +30,9 @@ module.exports = {
     plugins: [new webpack.ProvidePlugin({
         React: 'react',
         axios: 'axios'
+    }),
+    new webpack.optimize.CommonsChunkPlugin({
+        name: 'vendors'
     })]
 };
 
@@ -48,7 +52,7 @@ if (process.env.NODE_ENV === 'production') {
         }),
         new UglifyJSPlugin({
             sourceMap: true,
-            parallel: true           
+            parallel: true
         })
     ]);
 }

@@ -1,0 +1,1 @@
+{"version":3,"file":"solicacrio.js","sources":["webpack:///./src/solicacrio/main.jsx"],"sourcesContent":["\"use strict\";\r\nimport { render } from 'react-dom';\r\nimport { App } from './app.jsx';\r\n\r\nrender(<App />, document.getElementById('app'));\n\n\n// WEBPACK FOOTER //\n// ./src/solicacrio/main.jsx"],"mappings":"AACA","sourceRoot":""}

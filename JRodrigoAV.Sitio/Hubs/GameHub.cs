@@ -16,6 +16,7 @@ namespace JRodrigoAV.Sitio.Hubs
             _players = players;
             _gameState = gameState;
         }
+
         public async Task<object> JoinGame(string playerName)
         {
             bool result = false;
@@ -45,7 +46,7 @@ namespace JRodrigoAV.Sitio.Hubs
 
         public async Task StartGame()
         {
-            if (!_gameState.Started && GetPlayer() != null)
+            if (!GameInProgress())
             {
                 _gameState.StartGame();
 
@@ -55,10 +56,18 @@ namespace JRodrigoAV.Sitio.Hubs
 
         public async Task StopGame()
         {
-            if (_gameState.Started && GetPlayer() != null)
+            if (GameInProgress())
             {
                 _gameState.StopGame();
                 await Clients.All.InvokeAsync("GameStopped");
+            }
+        }
+
+        public async Task SendCards(int[] selectedCards = null)
+        {
+            if (GameInProgress() && selectedCards != null)
+            {
+                await Clients.Client(Context.ConnectionId).InvokeAsync("ReceiveCards", _gameState.DealCardsToPlayer(selectedCards.Length));
             }
         }
 
@@ -71,6 +80,11 @@ namespace JRodrigoAV.Sitio.Hubs
         {
             KeyValuePair<string, Player> keyValuePair = _players.SingleOrDefault(s => s.Value.ConnectionId == this.Context.ConnectionId);
             return keyValuePair.Value;
+        }
+
+        private bool GameInProgress()
+        {
+            return _gameState.Started && GetPlayer() != null;
         }
     }
 }

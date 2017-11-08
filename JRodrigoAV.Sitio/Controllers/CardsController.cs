@@ -9,38 +9,42 @@ namespace JRodrigoAV.Sitio.Controllers
     [Route("api/cards")]
     public class CardsController : Controller
     {
-        private readonly IHubContext<GameHub> _gameHub;
-        private readonly GameState _gameState;
-        private readonly WhiteDeck _whiteDeck;
-        private readonly BlackDeck _blackDeck;
-        public CardsController(GameState gameState, WhiteDeck whiteDeck, BlackDeck blackDeck, IHubContext<GameHub> gameHubContext)
+        //private readonly IHubContext<GameHub> _gameHub;
+
+        /*public CardsController(GameState gameState,IHubContext<GameHub> gameHubContext)
         {
-            _whiteDeck = whiteDeck;
-            _blackDeck = blackDeck;
             _gameState = gameState;
             _gameHub = gameHubContext;
-        }
+        }*/
 
         [HttpGet("whitedeck")]
-        public IActionResult WhiteDeck() => Json(_whiteDeck.ShowCards);
+        public IActionResult WhiteDeck([FromServices]WhiteDeck whiteDeck) => Json(whiteDeck.ShowCards);
 
         [HttpGet("white/{id}")]
-        public IActionResult GetWhiteCardById(int id) => Json(_whiteDeck.GetCardById(id));
+        public IActionResult GetWhiteCardById(int id, [FromServices]WhiteDeck whiteDeck) => Json(whiteDeck.GetCardById(id));
 
         [HttpGet("blackdeck")]
-        public IActionResult BlackDeck() => Json(_blackDeck.ShowCards);
+        public IActionResult BlackDeck([FromServices]BlackDeck blackDeck) => Json(blackDeck.ShowCards);
 
         [HttpGet("black/{id}")]
-        public IActionResult GetBlackCardById(int id) => Json(_blackDeck.GetCardById(id));
+        public IActionResult GetBlackCardById(int id, [FromServices]BlackDeck blackDeck) => Json(blackDeck.GetCardById(id));
 
         [HttpGet("black")]
-        public IActionResult GetBlackCard()
+        public IActionResult GetBlackCard([FromServices]BlackDeck blackDeck)
         {
-            if (_gameState.Started)
-            {
-                return Json(_blackDeck.GetTopCard());
-            }
-            return BadRequest("Game not started");
+            return Json(blackDeck.GetTopCard());
+        }
+
+        [HttpGet("deal")]
+        public IActionResult DealCards([FromServices] WhiteDeck whiteDeck, int cards = 10)
+        {
+            return Json(whiteDeck.DealCardsToPlayer(cards));
+        }
+
+        [HttpPost("build")]
+        public string Build([FromBody]BuildViewModel model, [FromServices]WhiteDeck whiteDeck, [FromServices] BlackDeck blackDeck)
+        {
+            return model.Build(blackDeck, whiteDeck);
         }
     }
 }
