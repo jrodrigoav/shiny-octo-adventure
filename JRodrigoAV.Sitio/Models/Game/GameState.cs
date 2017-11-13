@@ -14,13 +14,16 @@ namespace JRodrigoAV.Sitio.Models.Game
         public bool Started { get; private set; }
 
         public BlackCard GameCard { get; private set; }
-
+        public BlackDeck BlackDeck => _blackDeck;
+        public WhiteDeck WhiteDeck => _whiteDeck;
+        public Dictionary<string, string> Votes { get; set; }
         public GameState(Players players, WhiteDeck whiteDeck, BlackDeck blackDeck)
         {
             Started = false;
             _players = players;
             _blackDeck = blackDeck;
             _whiteDeck = whiteDeck;
+            Votes = new Dictionary<string, string>();
         }
 
         public void StartGame()
@@ -33,11 +36,20 @@ namespace JRodrigoAV.Sitio.Models.Game
         {
             Started = false;
             GameCard = null;
+            Votes.Clear();
         }
 
         public IEnumerable<WhiteCard> DealCardsToPlayer(int cardsToDeal = 10)
         {
             return _whiteDeck.DealCardsToPlayer(cardsToDeal);
+        }
+
+        public void AddChoice(string playerId, int[] selectedCards)
+        {
+            if (!Votes.ContainsKey(playerId) && Started)
+            {
+                Votes.Add(playerId, new BuildViewModel().Build(GameCard, selectedCards, _blackDeck, _whiteDeck));
+            }
         }
     }
 }

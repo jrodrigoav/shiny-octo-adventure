@@ -67,7 +67,12 @@ namespace JRodrigoAV.Sitio.Hubs
         {
             if (GameInProgress() && selectedCards != null)
             {
+                _gameState.AddChoice(GetPlayer().LowerCaseName, selectedCards);
                 await Clients.Client(Context.ConnectionId).InvokeAsync("ReceiveCards", _gameState.DealCardsToPlayer(selectedCards.Length));
+            }
+            if (_gameState.Votes.Count == _players.Count)
+            {
+                await Clients.All.InvokeAsync("ReceiveChoices", _gameState.Votes.Select(f => new { Key = f.Key, Value = f.Value }));
             }
         }
 

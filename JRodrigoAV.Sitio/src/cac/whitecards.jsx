@@ -10,8 +10,7 @@ export class WhiteCards extends React.Component {
         this.props.whiteCardSelected(card);
     }
     render() {
-        const cards = this.props.cards;
-        const pick = this.props.blackcard.pick;
+        const cards = this.props.cards;        
         let leftCol = null;
         let rightCol = null;
         let result = null;
@@ -26,8 +25,7 @@ export class WhiteCards extends React.Component {
                     return <WhiteCard key={card.id} card={card} onCardSelected={this.selectCard} />;
                 }
             });
-            result = <div className="row">
-                <h4 className="col-12">Pick {pick} cards</h4>
+            result = <div className="row">                
                 <div className="col">
                     <ul className="list-group">
                         {leftCol}

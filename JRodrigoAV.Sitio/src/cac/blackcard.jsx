@@ -10,7 +10,7 @@ export class BlackCard extends React.Component {
             result = blackCard.text;
         }
         else {
-            result = 'N/A';
+            result = blackCard.text ? blackCard.text : 'N/A';
         }
         return <div className="card">
             <div className="card-body text-light bg-dark rounded">

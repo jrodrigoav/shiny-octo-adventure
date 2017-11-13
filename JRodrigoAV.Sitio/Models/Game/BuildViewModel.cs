@@ -38,5 +38,12 @@ namespace JRodrigoAV.Sitio.Models.Game
             }
             return result.ToString();
         }
+
+        public string Build(BlackCard gameCard, int[] selectedCards,BlackDeck blackDeck,WhiteDeck whiteDeck)
+        {
+            Blackcard = gameCard.Id;
+            Selectedcards = selectedCards;
+            return Build(blackDeck, whiteDeck);
+        }
     }
 }

@@ -20,12 +20,14 @@ export class App extends React.Component {
             players: [],
             gameCard: {},
             whiteCards: [],
-            selectedCards: []
+            selectedCards: [],
+            votes:[]
         };
         this.handleInputChange = this.handleInputChange.bind(this);
         this.joinGame = this.joinGame.bind(this);
         this.startStopGame = this.startStopGame.bind(this);
         this.selectCard = this.selectCard.bind(this);
+        this.sendCards = this.sendCards.bind(this);
     }
     gameConnection
     resetClient(component) {
@@ -36,7 +38,8 @@ export class App extends React.Component {
             started: false,
             whiteCards: [],
             selectedCards: [],
-            gameCard: {}
+            gameCard: {},
+            votes: []
         });
     }
     setupHub() {
@@ -65,6 +68,11 @@ export class App extends React.Component {
 
         that.gameConnection.on('GameStarted', (gameState) => that.setState({ started: gameState.started, gameCard: gameState.gameCard }));
         that.gameConnection.on('GameStopped', () => that.setState({ started: false, gameCard: {} }));
+        that.gameConnection.on('ReceiveCards', (cards) => {
+            var cards = _.shuffle(that.state.whiteCards.slice(0).concat(cards));
+            that.setState({ whiteCards: cards });
+        });
+        that.gameConnection.on('ReceiveChoices', (votes) => that.setState({ votes: votes, gameCard: { text: 'Time to vote!' } }));
 
 
         that.gameConnection.start().then(() => that.gameConnection.invoke('JoinGame', that.state.playerName).then(result => {
@@ -137,6 +145,12 @@ export class App extends React.Component {
         that.setState({ whiteCards: cards, selectedCards: selectedCards });
     }
 
+    sendCards(event) {
+        event.preventDefault();
+        var that = this;
+        that.gameConnection.invoke("SendCards", that.state.selectedCards);
+    }
+
     render() {
         const playerName = this.state.playerName;
         const players = this.state.players;
@@ -144,6 +158,17 @@ export class App extends React.Component {
         const isStarted = this.state.started;
         const blackCard = this.state.gameCard;
         const whiteCards = this.state.whiteCards;
+        let votes = null;
+        if (this.state.votes.length) {
+            console.log(this.state.votes);
+            votes = this.state.votes.map(v => <li key={v.key}>{v.value}</li>);
+        }
+        let sendCards = null;
+        if (isStarted && blackCard.pick) {
+            sendCards = <div className="col-12">
+                <h4 className="text-info">Pick {blackCard.pick} cards <button className="btn btn-success" onClick={this.sendCards}>Send</button></h4>
+            </div>;
+        }
         return <div className="row" >
             <div className="col-md-12 col-lg">
                 <Login joined={isJoined} started={isStarted} onJoin={this.joinGame} playerName={playerName} handleInput={this.handleInputChange} startStopGame={this.startStopGame} />
@@ -155,7 +180,16 @@ export class App extends React.Component {
             <div className="w-100 d-lg-none d-md-block"></div>
             <div className="col-md-12 col-lg-8">
                 <div className="row">
-                    <WhiteCards cards={whiteCards} blackcard={blackCard} whiteCardSelected={this.selectCard} />                    
+                    {sendCards}
+                    <WhiteCards cards={whiteCards} blackcard={blackCard} whiteCardSelected={this.selectCard} />
+                </div>
+                <div className="row">
+                    <div className="col">
+                        <h4 className="text-info">Respuestas</h4>
+                        <ul>
+                            {votes}
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>;
