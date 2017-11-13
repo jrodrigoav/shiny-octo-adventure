@@ -133,7 +133,7 @@ var App = exports.App = function (_React$Component) {
                 return that.setState({ started: gameState.started, gameCard: gameState.gameCard });
             });
             that.gameConnection.on('GameStopped', function () {
-                return that.setState({ started: false, gameCard: {} });
+                return that.setState({ started: false, gameCard: {}, votes: [] });
             });
             that.gameConnection.on('ReceiveCards', function (cards) {
                 var cards = _lodash2.default.shuffle(that.state.whiteCards.slice(0).concat(cards));
@@ -226,6 +226,12 @@ var App = exports.App = function (_React$Component) {
         value: function sendCards(event) {
             event.preventDefault();
             var that = this;
+            var selectedCards = that.state.selectedCards.slice(0);
+            var cards = that.state.whiteCards.slice(0);
+            _lodash2.default.remove(cards, function (c) {
+                return c.selected;
+            });
+            that.setState({ whiteCards: cards, selectedCards: [] });
             that.gameConnection.invoke("SendCards", that.state.selectedCards);
         }
     }, {
@@ -239,12 +245,17 @@ var App = exports.App = function (_React$Component) {
             var whiteCards = this.state.whiteCards;
             var votes = null;
             if (this.state.votes.length) {
-                console.log(this.state.votes);
                 votes = this.state.votes.map(function (v) {
                     return _react2.default.createElement(
                         'li',
                         { key: v.key },
-                        v.value
+                        v.value,
+                        ' ',
+                        _react2.default.createElement(
+                            'button',
+                            { className: 'btn btn-sm btn-info' },
+                            _react2.default.createElement('i', { className: 'fa fa-thumbs-up', 'aria-hidden': 'true' })
+                        )
                     );
                 });
             }

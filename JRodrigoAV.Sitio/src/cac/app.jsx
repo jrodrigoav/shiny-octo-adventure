@@ -21,7 +21,7 @@ export class App extends React.Component {
             gameCard: {},
             whiteCards: [],
             selectedCards: [],
-            votes:[]
+            votes: []
         };
         this.handleInputChange = this.handleInputChange.bind(this);
         this.joinGame = this.joinGame.bind(this);
@@ -67,7 +67,7 @@ export class App extends React.Component {
         });
 
         that.gameConnection.on('GameStarted', (gameState) => that.setState({ started: gameState.started, gameCard: gameState.gameCard }));
-        that.gameConnection.on('GameStopped', () => that.setState({ started: false, gameCard: {} }));
+        that.gameConnection.on('GameStopped', () => that.setState({ started: false, gameCard: {}, votes: [] }));
         that.gameConnection.on('ReceiveCards', (cards) => {
             var cards = _.shuffle(that.state.whiteCards.slice(0).concat(cards));
             that.setState({ whiteCards: cards });
@@ -148,6 +148,10 @@ export class App extends React.Component {
     sendCards(event) {
         event.preventDefault();
         var that = this;
+        var selectedCards = that.state.selectedCards.slice(0);
+        var cards = that.state.whiteCards.slice(0);
+        _.remove(cards, function (c) { return c.selected });
+        that.setState({ whiteCards: cards, selectedCards: [] });
         that.gameConnection.invoke("SendCards", that.state.selectedCards);
     }
 
@@ -160,8 +164,7 @@ export class App extends React.Component {
         const whiteCards = this.state.whiteCards;
         let votes = null;
         if (this.state.votes.length) {
-            console.log(this.state.votes);
-            votes = this.state.votes.map(v => <li key={v.key}>{v.value}</li>);
+            votes = this.state.votes.map(v => <li key={v.key}>{v.value} <button className="btn btn-sm btn-info"><i className="fa fa-thumbs-up" aria-hidden="true"></i></button></li>);
         }
         let sendCards = null;
         if (isStarted && blackCard.pick) {
