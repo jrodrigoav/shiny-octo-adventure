@@ -166,3 +166,4 @@ node_modules/
 JRodrigoAV.Sitio/node_modules/
 JRodrigoAV.Sitio/Publish.ps1
 package-lock.json
+/JRodrigoAV.Sitio/package-lock.json
