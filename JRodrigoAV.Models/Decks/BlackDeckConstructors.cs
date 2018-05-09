@@ -280,7 +280,7 @@ namespace JRodrigoAV.Models.Decks {
                 "In line with our predictions, we find a robust correlation between __________ and __________.",
                 "In M. Night Shyamalan's new movie, Bruce Willis discovers that __________ had really been __________ all along.",
                 "In Nintendo's new game, you must fight off wave after wave of __________ in order to save __________.",
-                "In return for my soul, the Devil promime __________, but all I got was __________.",
+                "In return for my soul, the Devil promised me __________, but all I got was __________.",
                 "In Rome, there are whisperings that the Vatican has a secret room devoted to __________.",
                 "In the 1950s, psychologists prescribed __________ as a cure for homosexuality.",
                 "In the beginning, there was __________. And the Lord said 'Let there be __________.'",
