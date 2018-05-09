@@ -1,14 +1,11 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
-using JRodrigoAV.Sitio.Models.Cards;
+using JRodrigoAV.Models.Cards;
 
-namespace JRodrigoAV.Sitio.Models.Decks
-{
-    public partial class WhiteDeck
-    {
-        public WhiteDeck()
-        {
-            AllCards = new List<WhiteCard>() { };
+namespace JRodrigoAV.Models.Decks {
+    public partial class WhiteDeck {
+        public WhiteDeck () {
+            AllCards = new List<WhiteCard> () { };
             int id = 1;
             string[] cards = new string[] {
                 "10 football players with erections barrelling towards you at full speed",
@@ -2423,13 +2420,12 @@ namespace JRodrigoAV.Sitio.Models.Decks
                 "Zeus's sexual appetites",
                 "Zombie consultants",
                 "Zyklon B"
-                };
+            };
 
-            foreach (var item in cards)
-            {
-                AllCards.Add(new WhiteCard(id++, item));
+            foreach (var item in cards) {
+                AllCards.Add (new WhiteCard (id++, item));
             }
-            Shuffle();
+            Shuffle ();
         }
     }
 }

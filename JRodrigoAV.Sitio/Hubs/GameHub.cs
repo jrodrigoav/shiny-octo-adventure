@@ -1,4 +1,4 @@
-﻿using JRodrigoAV.Sitio.Models.Game;
+﻿using JRodrigoAV.Models.Game;
 using Microsoft.AspNetCore.SignalR;
 using System;
 using System.Collections.Generic;

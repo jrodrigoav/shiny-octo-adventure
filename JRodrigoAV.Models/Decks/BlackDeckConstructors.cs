@@ -1,15 +1,12 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using JRodrigoAV.Sitio.Models.Cards;
+using JRodrigoAV.Models.Cards;
 
-namespace JRodrigoAV.Sitio.Models.Decks
-{
-    public partial class BlackDeck
-    {
-        public BlackDeck()
-        {
-            AllCards = new List<BlackCard>() { };
+namespace JRodrigoAV.Models.Decks {
+    public partial class BlackDeck {
+        public BlackDeck () {
+            AllCards = new List<BlackCard> () { };
             int id = 1;
             string[] cards = new string[] {
                 "(Heavy breathing) Luke, I am __________.",
@@ -632,19 +629,17 @@ namespace JRodrigoAV.Sitio.Models.Decks
                 "You're not going to believe this, but I'm you from the future! You've got to stop __________.",
                 "You've seen the bearded lady! You've seen the ring of fire! Now, ladies and gentlemen, feast your eyes upon __________!"
             };
-            foreach (var item in cards)
-            {                
-                int slots = FindSlots(item).Count();
-                int pick=1;
-                if (slots > pick)
-                {
+            foreach (var item in cards) {
+                int slots = FindSlots (item).Count ();
+                int pick = 1;
+                if (slots > pick) {
                     pick = slots;
                 }
-                BlackCard newCard = new BlackCard(id++, item,pick,pick);
-                AllCards.Add(newCard);
+                BlackCard newCard = new BlackCard (id++, item, pick, pick);
+                AllCards.Add (newCard);
             }
 
-            Shuffle();
+            Shuffle ();
         }
     }
 }
