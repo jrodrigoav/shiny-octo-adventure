@@ -7,7 +7,7 @@ let APP_DIR_CAC = path.resolve(__dirname, 'src/cac');
 let APP_DIR_SOLICACRIO = path.resolve(__dirname, 'src/solicacrio');
 
 module.exports = {
-    mode:'development',
+    mode:'production',
     entry: {
         cac: path.resolve(APP_DIR_CAC, 'main.jsx'),
         solicacrio: path.resolve(APP_DIR_SOLICACRIO, 'main.jsx')
