@@ -30,7 +30,7 @@ namespace JRodrigoAV.Sitio
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseSignalR(routes => routes.MapHub<GameHub>("game"));
+            app.UseSignalR(routes => routes.MapHub<GameHub>("/game"));
             
             app.UseMvcWithDefaultRoute();
 

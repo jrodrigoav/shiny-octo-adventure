@@ -1,5 +1,5 @@
 ﻿"use strict";
-var signalR = require('@aspnet/signalr-client/dist/browser/signalr-clientES5-1.0.0-alpha2-final');
+var signalR = require('@aspnet/signalr');
 import React from 'react';
 import { render } from 'react-dom';
 import axios from 'axios';
@@ -43,15 +43,13 @@ export class App extends React.Component {
         });
     }
     setupHub() {
-        var transportType = signalR.TransportType.WebSockets;
-        //can also be ServerSentEvents or LongPolling
-        var logger = new signalR.ConsoleLogger(signalR.LogLevel.Error);
-        var gameHub = new signalR.HttpConnection(`${document.location.protocol}//${document.location.host}/game`, {
-            transport: transportType,
-            logger: logger
-        });
-        var that = this;
-        this.gameConnection = new signalR.HubConnection(gameHub, logger);
+        const transportType = signalR.HttpTransportType.WebSockets;
+        //can also be ServerSentEvents or LongPolling        
+        let that = this;
+        that.gameConnection = new signalR.HubConnectionBuilder()
+            .withUrl(`${document.location.protocol}//${document.location.host}/game`, {
+                transport: transportType
+            }).build();        
 
         that.gameConnection.onClosed = e => {
             console.log('Connection closed');
@@ -69,8 +67,8 @@ export class App extends React.Component {
         that.gameConnection.on('GameStarted', (gameState) => that.setState({ started: gameState.started, gameCard: gameState.gameCard }));
         that.gameConnection.on('GameStopped', () => that.setState({ started: false, gameCard: {}, votes: [] }));
         that.gameConnection.on('ReceiveCards', (cards) => {
-            var cards = _.shuffle(that.state.whiteCards.slice(0).concat(cards));
-            that.setState({ whiteCards: cards });
+            let shuffledCards = _.shuffle(that.state.whiteCards.slice(0).concat(cards));
+            that.setState({ whiteCards: shuffledCards });
         });
         that.gameConnection.on('ReceiveChoices', (votes) => that.setState({ votes: votes, gameCard: { text: 'Time to vote!' } }));
 
@@ -106,10 +104,10 @@ export class App extends React.Component {
         if (this.state.joined === false) {
             this.setupHub();
         } else {
-            var that = this;
-            this.gameConnection.invoke('LeaveGame').then(() => {
+            let that = this;
+            that.gameConnection.invoke('LeaveGame').then(() => {
                 that.resetClient();
-                this.gameConnection.stop().catch(err => console.log(`Error closing connection ${err}`));
+                that.gameConnection.stop().catch(err => console.log(`Error closing connection ${err}`));
             }, (event) => that.resetClient(that));
         }
     }

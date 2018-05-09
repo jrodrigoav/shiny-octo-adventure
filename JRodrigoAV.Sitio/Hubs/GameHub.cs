@@ -23,7 +23,7 @@ namespace JRodrigoAV.Sitio.Hubs
             result = _players.AddPlayer(playerName, Context.ConnectionId);
             if (result)
             {
-                await Clients.All.InvokeAsync("PlayerJoined", _gameState.PlayerNames);
+                await Clients.All.SendAsync("PlayerJoined", _gameState.PlayerNames);
             }
             return await Task.Run(() => new { Joined = result, GameState = _gameState, WhiteCards = _gameState.DealCardsToPlayer() });
         }
@@ -39,7 +39,7 @@ namespace JRodrigoAV.Sitio.Hubs
                 {
                     _gameState.StopGame();
                 }
-                await Clients.All.InvokeAsync("PlayerLeft", _gameState.PlayerNames);
+                await Clients.All.SendAsync("PlayerLeft", _gameState.PlayerNames);
             }
             return await Task.Run(() => result);
         }
@@ -50,7 +50,7 @@ namespace JRodrigoAV.Sitio.Hubs
             {
                 _gameState.StartGame();
 
-                await Clients.All.InvokeAsync("GameStarted", _gameState);
+                await Clients.All.SendAsync("GameStarted", _gameState);
             }
         }
 
@@ -59,7 +59,7 @@ namespace JRodrigoAV.Sitio.Hubs
             if (GameInProgress())
             {
                 _gameState.StopGame();
-                await Clients.All.InvokeAsync("GameStopped");
+                await Clients.All.SendAsync("GameStopped");
             }
         }
 
@@ -68,11 +68,11 @@ namespace JRodrigoAV.Sitio.Hubs
             if (GameInProgress() && selectedCards != null)
             {
                 _gameState.AddChoice(GetPlayer().LowerCaseName, selectedCards);
-                await Clients.Client(Context.ConnectionId).InvokeAsync("ReceiveCards", _gameState.DealCardsToPlayer(selectedCards.Length));
+                await Clients.Client(Context.ConnectionId).SendAsync("ReceiveCards", _gameState.DealCardsToPlayer(selectedCards.Length));
             }
             if (_gameState.Votes.Count == _players.Count)
             {
-                await Clients.All.InvokeAsync("ReceiveChoices", _gameState.Votes.Select(f => new { Key = f.Key, Value = f.Value }));
+                await Clients.All.SendAsync("ReceiveChoices", _gameState.Votes.Select(f => new { Key = f.Key, Value = f.Value }));
             }
         }
 

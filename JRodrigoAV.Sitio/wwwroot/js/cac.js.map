@@ -1,1 +1,0 @@
-{"version":3,"file":"cac.js","sources":["webpack:///./src/cac/main.jsx"],"sourcesContent":["\"use strict\";\r\nimport { render } from 'react-dom';\r\nimport { App } from './app.jsx';\r\n\r\nrender(<App />, document.getElementById('app'));\n\n\n// WEBPACK FOOTER //\n// ./src/cac/main.jsx"],"mappings":"AACA","sourceRoot":""}
