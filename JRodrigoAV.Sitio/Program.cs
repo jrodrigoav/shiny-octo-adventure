@@ -14,7 +14,6 @@ namespace JRodrigoAV.Sitio
         {
             IWebHost result = WebHost.CreateDefaultBuilder(args)
                 .UseStartup<Startup>()
-                .UseIISIntegration()
                 .Build();
             return result;
         }

@@ -1,6 +1,6 @@
 using JRodrigoAV.Sitio.Hubs;
-using JRodrigoAV.Sitio.Models.Decks;
-using JRodrigoAV.Sitio.Models.Game;
+using JRodrigoAV.Models.Decks;
+using JRodrigoAV.Models.Game;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 

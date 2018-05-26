@@ -1,9 +1,6 @@
-﻿namespace JRodrigoAV.Sitio.Models
-{
-    public class UserDetails
-    {
-        public UserDetails(string connectionId, string name)
-        {
+namespace JRodrigoAV.Models {
+    public class UserDetails {
+        public UserDetails (string connectionId, string name) {
             ConnectionId = connectionId;
             Name = name;
         }
