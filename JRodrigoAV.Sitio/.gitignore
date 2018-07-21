@@ -166,3 +166,4 @@ node_modules/
 /node_modules/
 /Publish.ps1
 /package-lock.json
+wwwroot/
