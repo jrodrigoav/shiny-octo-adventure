@@ -8,12 +8,12 @@
   "scripts": {
     "builddev": "webpack --mode development --colors",
     "dev": "webpack --mode development --watch",
-    "postdev": "dotnet watch run",
-    "buildprod": "webpack --mode production --colors",
+    "postdev": "dotnet watch run",    
     "build": "webpack --mode production",
-    "postbuild": "dotnet run",
+    "runprod": "dotnet run",
     "startdev": "npm-run-all --parallel dev postdev",
-    "startprod": "npm-run-all --parallel build postbuild"
+    "startprod": "npm-run-all --parallel build runprod",
+    "start": "npm run-script build"
   },
   "devDependencies": {
     "babel-core": "^6.26.3",

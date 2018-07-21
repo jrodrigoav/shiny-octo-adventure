@@ -1,22 +1,23 @@
 const webpack = require('webpack');
+const path = require('path');
 const HtmlWebPackPlugin = require("html-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 const ScriptExtPlugin = require('script-ext-html-webpack-plugin');
 
-const BUILD_DIR = path.resolve(__dirname, '/wwwroot');
-const APP_DIR_CAC = path.resolve(__dirname, '/src/cac');
-const APP_DIR_SOLICACRIO = path.resolve(__dirname, '/src/solicacrio');
+const BUILD_DIR = path.resolve(__dirname, 'wwwroot');
+const APP_DIR_CAC = path.resolve(__dirname, 'src/cac');
+const APP_DIR_SOLICACRIO = path.resolve(__dirname, 'src/solicacrio');
 
 module.exports = {
     entry: {
-        cac: path.resolve(APP_DIR_CAC, 'main.jsx'),
-        solicacrio: path.resolve(APP_DIR_SOLICACRIO, 'main.jsx')
+        cac: APP_DIR_CAC + '/main.jsx',
+        solicacrio: APP_DIR_SOLICACRIO + '/main.jsx'
     },
     output: {
         path: BUILD_DIR,
-        filename: 'js/[name].[chunkhash].js'
+        filename: 'js/[name].js'
     },
     resolve: {
         extensions: ['.js', '.jsx', '.html'],
@@ -29,7 +30,7 @@ module.exports = {
             exclude: /node_modules/,
             loader: 'babel-loader'
         },
-        {
+        /*{
             test: /\.html$/,
             include: APP_DIR,
             exclude: /node_modules/,
@@ -39,10 +40,10 @@ module.exports = {
                     minimize: false
                 }
             }]
-        },
+        },*/
         {
             test: /\.css$/,
-            include: APP_DIR,
+            include: [APP_DIR_CAC, APP_DIR_SOLICACRIO],
             exclude: /node_modules/,
             use: [MiniCssExtractPlugin.loader, "css-loader"]
         },
@@ -66,18 +67,18 @@ module.exports = {
         from: 'src/assets',
         to: 'assets'
     }]),
-    new HtmlWebPackPlugin({
+    /*new HtmlWebPackPlugin({
         template: APP_DIR + "/index.html",
         output: DIST_DIR
-    }),
-    new ScriptExtPlugin({
+    }),*/
+    /*new ScriptExtPlugin({
         defaultAttribute: 'defer'
-    }),
+    }),*/
     new CleanWebpackPlugin(['wwwroot/*']),
     new MiniCssExtractPlugin({
         // Options similar to the same options in webpackOptions.output
         // both options are optional
-        filename: "assets/styles/[name].[chunkhash].css"
+        filename: "assets/styles/[name].css"
     })
     ],
     optimization: {
